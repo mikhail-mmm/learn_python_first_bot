@@ -1,11 +1,14 @@
 import logging
-import ephem
-import datetime as dt
+
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
+import ephem
+import datetime as dt
 import settings
 
-logging.basicConfig(filename='learn_bot.log', level=logging.INFO)
+logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO,
+                    filename='bot.log')
 
 def greet_user(update, context):
     print('Вызван /start')
@@ -14,7 +17,6 @@ def greet_user(update, context):
 
 def planet_info(update, context):
     print('Вызван /planet')
-    print(update)
     user_message = update.message.text.split()
     print(user_message)
     print(user_message[1])
@@ -28,11 +30,6 @@ def planet_info(update, context):
     elif user_message[1].lower() == 'venus':
         venus = ephem.Venus(today_date)
         constellation = ephem.constellation(venus)
-        print(constellation)
-        update.message.reply_text(' '.join(constellation))
-    elif user_message[1].lower() == 'earth':
-        earth = ephem.Earth(today_date)
-        constellation = ephem.constellation(earth)
         print(constellation)
         update.message.reply_text(' '.join(constellation))
     elif user_message[1].lower() == 'mars':
@@ -72,15 +69,12 @@ def main():
     mybot = Updater(settings.API_KEY, use_context=True)
 
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler('start', greet_user))
+    dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler('planet', planet_info))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
-    logging.info('Запуск бота.')
-
     mybot.start_polling()
-
     mybot.idle()
-    
-if __name__ == 'main':
+
+if __name__ == "__main__":
     main()
